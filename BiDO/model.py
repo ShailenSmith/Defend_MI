@@ -6,8 +6,11 @@ import torch.nn as nn
 import torchvision.models
 import torch.nn.functional as F
 from torch.nn.modules.loss import _Loss
-import math, evolve, hsic
-from backbone import ResNetL_I
+import math
+
+from Defend_MI.BiDO import evolve, hsic
+from Defend_MI.BiDO.backbone import ResNetL_I
+
 
 class VGG19(nn.Module):
     def __init__(self, n_classes=5):

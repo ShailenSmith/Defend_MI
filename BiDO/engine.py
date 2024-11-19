@@ -1,11 +1,13 @@
-import torch, os, time, model, utils, hsic, sys
+import torch, time, os, sys
 import numpy as np
 import torch.nn as nn
 from copy import deepcopy
 from torch.optim.lr_scheduler import MultiStepLR
-from util import Bar, Logger, AverageMeter, accuracy, mkdir_p, savefig
 import torch.nn.functional as F
 from tqdm import tqdm
+
+from Defend_MI.BiDO import model, utils, hsic
+from Defend_MI.BiDO.util import Bar, Logger, AverageMeter, accuracy, mkdir_p, savefig
 
 device = "cuda"
 

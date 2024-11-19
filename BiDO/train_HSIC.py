@@ -1,12 +1,12 @@
-import torch, os, engine, model, utils, sys
+import torch, os
 import torch.nn as nn
 from torch.optim.lr_scheduler import MultiStepLR
 from copy import deepcopy
 import numpy as np
 import collections
 
-import model
-from util import Bar, Logger, AverageMeter, accuracy, mkdir_p, savefig
+from Defend_MI.BiDO.util import Bar, Logger, AverageMeter, accuracy, mkdir_p, savefig
+from Defend_MI.BiDO import engine, model, utils
 
 device = "cuda"
 
@@ -41,7 +41,7 @@ def load_feature_extractor(net, state_dict):
         net_state[name].copy_(mew_param.data)
 
 
-def main(args, loaded_args, trainloader, testloader):
+def train_HSIC_main(args, loaded_args, trainloader, testloader):
     n_classes = loaded_args["dataset"]["n_classes"]
     model_name = loaded_args["dataset"]["model_name"]
     weight_decay = loaded_args[model_name]["weight_decay"]
@@ -132,5 +132,5 @@ if __name__ == '__main__':
     trainloader = utils.init_dataloader(loaded_args, train_file, mode="train")
     testloader = utils.init_dataloader(loaded_args, test_file, mode="test")
 
-    main(args, loaded_args, trainloader, testloader)
+    train_HSIC_main(args, loaded_args, trainloader, testloader)
 
