@@ -1,11 +1,13 @@
 import numpy as np
-import torch, random, sys, json, time, dataloader, copy, os
+import torch, random, sys, json, time, copy, os
 import torch.nn as nn
 from datetime import datetime
 from torch.utils.data import sampler
 from collections import defaultdict
 from torch.autograd import Variable
 import torchvision.utils as tvls
+
+from Defend_MI.BiDO import dataloader
 
 
 def save_tensor_images(images, filename, nrow = None, normalize = True):
@@ -249,7 +251,7 @@ def to_categorical(y, num_classes):
     return torch.squeeze(torch.eye(num_classes)[y], dim=1)
 
 
-from util import Bar, Logger, AverageMeter, accuracy, mkdir_p, savefig
+from Defend_MI.BiDO.util import Bar, Logger, AverageMeter, accuracy, mkdir_p, savefig
 
 
 def train_vib(trainloader, model, criterion, optimizer, beta=1e-2):

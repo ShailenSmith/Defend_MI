@@ -50,6 +50,7 @@ def train_HSIC_main(args, loaded_args, trainloader, testloader):
     lr = loaded_args[model_name]["lr"]
     milestones = loaded_args[model_name]["adjust_epochs"]
 
+
     hp_list = [
         (0, 0)
     ]
@@ -64,7 +65,9 @@ def train_HSIC_main(args, loaded_args, trainloader, testloader):
 
             load_pretrained_feature_extractor = True
             if load_pretrained_feature_extractor:
-                pretrained_model_ckpt = "target_model/vgg16_bn-6c64b313.pth"
+                model_dir = args.model_dir
+                root_path = args.root_path
+                pretrained_model_ckpt = f"{root_path}/{model_dir}/vgg16_bn-6c64b313.pth"
                 checkpoint = torch.load(pretrained_model_ckpt)
                 load_feature_extractor(net, checkpoint)
 
