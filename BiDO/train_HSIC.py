@@ -50,6 +50,7 @@ def train_HSIC_main(args, loaded_args, trainloader, testloader):
     lr = loaded_args[model_name]["lr"]
     milestones = loaded_args[model_name]["adjust_epochs"]
 
+    model_path = os.path.join(args.root_path, args.model_dir, args.dataset, args.measure)
 
     hp_list = [
         (0, 0)
@@ -106,6 +107,8 @@ def train_HSIC_main(args, loaded_args, trainloader, testloader):
         utils.save_checkpoint({
             'state_dict': best_model.state_dict(),
         }, model_path, "{}_{:.3f}&{:.3f}_{:.2f}.tar".format(model_name, a1, a2, best_ACC))
+
+        return best_model
 
 
 if __name__ == '__main__':

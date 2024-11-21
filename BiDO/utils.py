@@ -248,7 +248,7 @@ def low2high(img):
 
 def to_categorical(y, num_classes):
     """ 1-hot encodes a tensor """
-    return torch.squeeze(torch.eye(num_classes)[y], dim=1)
+    return torch.squeeze(torch.eye(num_classes, device='cuda')[y], dim=1) # needed to add device='cuda' to avoid an error. Not sure the cause yet
 
 
 from Defend_MI.BiDO.util import Bar, Logger, AverageMeter, accuracy, mkdir_p, savefig
