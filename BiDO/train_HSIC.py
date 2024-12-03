@@ -104,9 +104,9 @@ def train_HSIC_main(args, loaded_args, trainloader, testloader):
             scheduler.step()
 
         print("best acc:", best_ACC)
-        utils.save_checkpoint({
-            'state_dict': best_model.state_dict(),
-        }, model_path, "{}_{:.3f}&{:.3f}_{:.2f}.tar".format(model_name, a1, a2, best_ACC))
+        # utils.save_checkpoint({
+        #     'state_dict': best_model.state_dict(),
+        # }, model_path, "{}_{:.3f}&{:.3f}_{:.2f}.tar".format(model_name, a1, a2, best_ACC))
 
         return best_model
 
