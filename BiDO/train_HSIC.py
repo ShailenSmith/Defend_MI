@@ -1,12 +1,12 @@
-import torch, os
+import torch, os, sys
 import torch.nn as nn
 from torch.optim.lr_scheduler import MultiStepLR
 from copy import deepcopy
 import numpy as np
 import collections
 
+from Defend_MI.BiDO import model, utils, engine
 from Defend_MI.BiDO.util import Bar, Logger, AverageMeter, accuracy, mkdir_p, savefig
-from Defend_MI.BiDO import engine, model, utils
 
 device = "cuda"
 
@@ -41,7 +41,7 @@ def load_feature_extractor(net, state_dict):
         net_state[name].copy_(mew_param.data)
 
 
-def train_HSIC_main(args, loaded_args, trainloader, testloader):
+def main(args, loaded_args, trainloader, testloader):
     n_classes = loaded_args["dataset"]["n_classes"]
     model_name = loaded_args["dataset"]["model_name"]
     weight_decay = loaded_args[model_name]["weight_decay"]
@@ -49,8 +49,6 @@ def train_HSIC_main(args, loaded_args, trainloader, testloader):
     n_epochs = loaded_args[model_name]["epochs"]
     lr = loaded_args[model_name]["lr"]
     milestones = loaded_args[model_name]["adjust_epochs"]
-
-    model_path = os.path.join(args.root_path, args.model_dir, args.dataset, args.measure)
 
     hp_list = [
         (0, 0)
@@ -66,9 +64,7 @@ def train_HSIC_main(args, loaded_args, trainloader, testloader):
 
             load_pretrained_feature_extractor = True
             if load_pretrained_feature_extractor:
-                model_dir = args.model_dir
-                root_path = args.root_path
-                pretrained_model_ckpt = f"{root_path}/{model_dir}/vgg16_bn-6c64b313.pth"
+                pretrained_model_ckpt = "target_model/vgg16_bn-6c64b313.pth"
                 checkpoint = torch.load(pretrained_model_ckpt)
                 load_feature_extractor(net, checkpoint)
 
@@ -104,11 +100,9 @@ def train_HSIC_main(args, loaded_args, trainloader, testloader):
             scheduler.step()
 
         print("best acc:", best_ACC)
-        # utils.save_checkpoint({
-        #     'state_dict': best_model.state_dict(),
-        # }, model_path, "{}_{:.3f}&{:.3f}_{:.2f}.tar".format(model_name, a1, a2, best_ACC))
-
-        return best_model
+        utils.save_checkpoint({
+            'state_dict': best_model.state_dict(),
+        }, model_path, "{}_{:.3f}&{:.3f}_{:.2f}.tar".format(model_name, a1, a2, best_ACC))
 
 
 if __name__ == '__main__':
@@ -138,5 +132,4 @@ if __name__ == '__main__':
     trainloader = utils.init_dataloader(loaded_args, train_file, mode="train")
     testloader = utils.init_dataloader(loaded_args, test_file, mode="test")
 
-    train_HSIC_main(args, loaded_args, trainloader, testloader)
-
+    main(args, loaded_args, trainloader, testloader)
