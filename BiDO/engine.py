@@ -5,6 +5,7 @@ from copy import deepcopy
 from torch.optim.lr_scheduler import MultiStepLR
 import torch.nn.functional as F
 from tqdm import tqdm
+import wandb
 
 from Defend_MI.BiDO import model, utils, hsic
 from Defend_MI.BiDO.util import Bar, Logger, AverageMeter, accuracy, mkdir_p, savefig
@@ -43,6 +44,9 @@ def multilayer_hsic(model, criterion, inputs, target, a1, a2, n_classes, ktype, 
         total_loss += cross_loss
         h_target = utils.to_categorical(target, num_classes=n_classes).float()
         h_data = inputs.view(bs, -1)
+        if not isinstance(hiddens, list):
+            hiddens = [hiddens]
+
         for hidden in hiddens:
             hidden = hidden.view(bs, -1)
 
@@ -116,6 +120,8 @@ def train_HSIC(model, criterion, optimizer, trainloader, a1, a2, n_classes,
     pbar = tqdm(enumerate(trainloader), total=len(trainloader), ncols=150)
 
     for batch_idx, (inputs, iden) in pbar:
+        model.train_step += 1
+
         data_time.update(time.time() - end)
         bs = inputs.size(0)
         inputs, iden = inputs.to(device), iden.to(device)
@@ -133,6 +139,9 @@ def train_HSIC(model, criterion, optimizer, trainloader, a1, a2, n_classes,
         loss_cls.update(float(cross_loss.detach().cpu().numpy()))
         lxz.update(sum(hx_l_list) / len(hx_l_list))
         lyz.update(sum(hy_l_list) / len(hy_l_list))
+
+        wandb.log({"train_Lxz_source": lxz.avg, "train_Lyz_source": lyz.avg, "train_step": model.train_step})
+
 
         top1.update(prec1.item())
         top5.update(prec5.item())
